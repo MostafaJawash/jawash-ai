@@ -283,7 +283,7 @@ export default function App() {
 
         <main className="chat">
           {messages.length === 0 && !loading && (
-            <div className="empty">اكتب سؤالك بالأسفل وابدأ المحادثة</div>
+            <div className="empty">اكتب سؤالك وابدأ المحادثة</div>
           )}
 
           {messages.map((m, i) => (
