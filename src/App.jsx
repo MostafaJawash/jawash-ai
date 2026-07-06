@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { loadConversations, saveConversations } from './storage'
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY
-const MODEL = 'gemini-flash-latest'
+const MODEL = 'gemini-flash-lite-latest'
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`
 const LEGACY_KEY = 'jawash-conversations' // للترحيل من الإصدار القديم (localStorage)
 
