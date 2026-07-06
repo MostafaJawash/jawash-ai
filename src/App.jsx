@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
 import { loadConversations, saveConversations } from './storage'
 
-// كل نداءات Gemini تمرّ عبر دالة Vercel آمنة؛ لا يوجد مفتاح API في الواجهة.
-const API_URL = '/api/chat'
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY
+const MODEL = 'gemini-flash-latest'
+const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`
 const LEGACY_KEY = 'jawash-conversations' // للترحيل من الإصدار القديم (localStorage)
 
 function newId() {
@@ -147,6 +148,11 @@ export default function App() {
     const q = question.trim()
     if ((!q && images.length === 0) || loading) return
 
+    if (!API_KEY) {
+      setError('لم يتم العثور على مفتاح API. تأكد من ملف .env')
+      return
+    }
+
     const attached = images
     const userMsg = {
       role: 'user',
@@ -181,6 +187,7 @@ export default function App() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-goog-api-key': API_KEY,
         },
         body: JSON.stringify({ contents: [{ parts }] }),
       })
