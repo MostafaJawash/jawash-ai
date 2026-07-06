@@ -271,7 +271,7 @@ export default function App() {
             src="/jawash_ai_logo_v2.svg"
             alt="Jawash AI"
           />
-          <p>مساعدك الذكي للأسئلة والأجوبة</p>
+          <p>مساعدك الذكي </p>
         </header>
 
         {storageWarning && (
