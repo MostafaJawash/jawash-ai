@@ -1,0 +1,571 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;500;600;700&display=swap');
+
+:root {
+  --ink: #1b2430;
+  --paper: #f6f3ec;
+  --paper-2: #ece6d8;
+  --gold: #b8873a;
+  --gold-soft: #e4c98a;
+  --teal: #2b5f5a;
+  --error: #a3403a;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--paper);
+  background-image:
+    radial-gradient(circle at 20% 0%, rgba(184,135,58,0.08), transparent 40%),
+    radial-gradient(circle at 100% 100%, rgba(43,95,90,0.08), transparent 40%);
+  font-family: 'Cairo', sans-serif;
+  color: var(--ink);
+}
+
+.layout {
+  min-height: 100vh;
+}
+
+.app {
+  position: relative;
+  max-width: 720px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0 20px;
+}
+
+/* شعار الموقع كخلفية خفيفة */
+.app::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url('/jawash_ai_logo_v2.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: min(560px, 80vw);
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 280px;
+  max-width: 84vw;
+  height: 100vh;
+  background: var(--paper-2);
+  border-left: 1px solid rgba(27,36,48,0.12);
+  box-shadow: -4px 0 24px rgba(27,36,48,0.12);
+  display: flex;
+  flex-direction: column;
+  padding: 18px 16px;
+  gap: 14px;
+  z-index: 30;
+  transform: translateX(100%);
+  transition: transform 0.25s ease;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-title {
+  font-family: 'Amiri', serif;
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--ink);
+}
+
+.icon-btn {
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  opacity: 0.7;
+}
+
+.icon-btn:hover {
+  opacity: 1;
+  background: rgba(27,36,48,0.08);
+}
+
+.new-chat {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px dashed var(--gold);
+  background: rgba(184,135,58,0.08);
+  color: var(--gold);
+  font-family: 'Cairo', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.new-chat:hover {
+  background: rgba(184,135,58,0.18);
+}
+
+.conv-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.conv-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  background: transparent;
+  transition: background 0.15s ease;
+}
+
+.conv-item:hover {
+  background: rgba(27,36,48,0.06);
+}
+
+.conv-item.active {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(27,36,48,0.08);
+}
+
+.conv-name {
+  flex: 1;
+  font-size: 0.92rem;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.conv-del {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.85rem;
+  opacity: 0;
+  padding: 2px 4px;
+  border-radius: 6px;
+  transition: opacity 0.15s ease;
+}
+
+.conv-item:hover .conv-del,
+.conv-item.active .conv-del {
+  opacity: 0.6;
+}
+
+.conv-del:hover {
+  opacity: 1 !important;
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(27,36,48,0.35);
+  z-index: 20;
+}
+
+.header {
+  position: relative;
+  text-align: center;
+  padding: 28px 0 24px;
+  border-bottom: 1px solid rgba(27,36,48,0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.header-logo {
+  height: 96px;
+  width: auto;
+  display: block;
+}
+
+/* زر فتح السايد بار مثبّت على جانب الشاشة */
+.side-toggle {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  border: 1px solid rgba(27,36,48,0.15);
+  border-right: none;
+  background: #fff;
+  color: var(--ink);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 14px 8px;
+  border-radius: 12px 0 0 12px;
+  box-shadow: -2px 2px 10px rgba(27,36,48,0.12);
+  z-index: 25;
+  transition: background 0.15s ease, padding 0.15s ease;
+}
+
+.side-toggle:hover {
+  background: var(--paper-2);
+  padding-right: 12px;
+}
+
+.header h1 {
+  font-family: 'Amiri', serif;
+  font-weight: 700;
+  font-size: 2.4rem;
+  margin: 0 0 6px;
+  letter-spacing: 0.5px;
+  color: var(--ink);
+}
+
+.header p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--teal);
+  font-weight: 500;
+}
+
+.chat {
+  flex: 1;
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+}
+
+.empty {
+  margin: auto;
+  color: rgba(27,36,48,0.45);
+  font-size: 1rem;
+  text-align: center;
+}
+
+.bubble {
+  max-width: 82%;
+  padding: 14px 18px;
+  border-radius: 14px;
+  position: relative;
+  line-height: 1.65;
+  font-size: 0.98rem;
+}
+
+.bubble p {
+  margin: 4px 0 0;
+  white-space: pre-wrap;
+}
+
+.bubble-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.bubble-images img {
+  max-width: 180px;
+  max-height: 180px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid rgba(27,36,48,0.12);
+}
+
+.bubble-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  opacity: 0.65;
+}
+
+.bubble.user {
+  align-self: flex-start;
+  background: var(--ink);
+  color: var(--paper);
+  border-bottom-left-radius: 4px;
+}
+
+.bubble.user .bubble-label {
+  color: var(--gold-soft);
+}
+
+.bubble.model {
+  align-self: flex-end;
+  background: #fff;
+  border: 1px solid var(--paper-2);
+  border-bottom-right-radius: 4px;
+  box-shadow: 0 2px 8px rgba(27,36,48,0.06);
+}
+
+.bubble.model .bubble-label {
+  color: var(--teal);
+}
+
+.dots {
+  display: flex;
+  gap: 5px;
+  margin-top: 8px !important;
+}
+
+.dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--teal);
+  opacity: 0.5;
+  animation: blink 1.2s infinite ease-in-out;
+}
+
+.dots span:nth-child(2) { animation-delay: 0.2s; }
+.dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(-2px); }
+}
+
+.error {
+  align-self: center;
+  background: rgba(163,64,58,0.1);
+  color: var(--error);
+  border: 1px solid rgba(163,64,58,0.3);
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+}
+
+.storage-warning {
+  margin-top: 12px;
+  background: rgba(184,135,58,0.12);
+  color: var(--gold);
+  border: 1px solid rgba(184,135,58,0.4);
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.composer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 0 28px;
+  border-top: 1px solid rgba(27,36,48,0.12);
+}
+
+.composer-row {
+  display: flex;
+  gap: 10px;
+}
+
+.attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.attachment {
+  position: relative;
+  width: 64px;
+  height: 64px;
+}
+
+.attachment img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid rgba(27,36,48,0.15);
+}
+
+.attachment button {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: none;
+  background: var(--ink);
+  color: #fff;
+  font-size: 0.7rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.attach-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(27,36,48,0.2);
+  background: #fff;
+  color: var(--ink);
+  font-family: 'Cairo', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.attach-icon {
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.attach-btn:hover:not(:disabled) {
+  background: var(--paper-2);
+}
+
+.attach-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.composer input {
+  flex: 1;
+  padding: 13px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(27,36,48,0.2);
+  background: #fff;
+  font-family: 'Cairo', sans-serif;
+  font-size: 0.98rem;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.composer input:focus {
+  border-color: var(--teal);
+}
+
+.composer input:disabled {
+  opacity: 0.6;
+}
+
+.composer button[type='submit'] {
+  padding: 0 22px;
+  border-radius: 10px;
+  border: none;
+  background: var(--teal);
+  color: #fff;
+  font-family: 'Cairo', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.composer button[type='submit']:hover:not(:disabled) {
+  background: #204a46;
+}
+
+.composer button[type='submit']:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ===== تحسينات الشاشات الصغيرة (الموبايل) ===== */
+@media (max-width: 600px) {
+  .app {
+    padding: 0 14px;
+  }
+
+  .header {
+    padding: 20px 0 16px;
+  }
+
+  .header-logo {
+    height: 72px;
+  }
+
+  .header p {
+    font-size: 0.85rem;
+  }
+
+  .chat {
+    padding: 16px 0;
+    gap: 10px;
+  }
+
+  .bubble {
+    max-width: 92%;
+    font-size: 0.95rem;
+  }
+
+  .bubble-images img {
+    max-width: 140px;
+    max-height: 140px;
+  }
+
+  .composer {
+    padding: 12px 0 calc(18px + env(safe-area-inset-bottom));
+    gap: 8px;
+  }
+
+  /* حجم 16px يمنع تكبير iOS التلقائي عند الكتابة */
+  .composer input {
+    font-size: 16px;
+    padding: 12px 14px;
+  }
+
+  .attach-btn {
+    padding: 0 12px;
+    font-size: 0.82rem;
+    gap: 4px;
+  }
+
+  .composer button[type='submit'] {
+    padding: 0 16px;
+  }
+
+  .side-toggle {
+    padding: 12px 6px;
+    font-size: 1.05rem;
+  }
+
+  .sidebar {
+    width: 84vw;
+    max-width: 320px;
+  }
+}
